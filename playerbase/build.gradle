@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
-//apply from: 'bintray.gradle'
-
+apply plugin: 'maven'
+apply from: 'maven_push.gradle'
 android {
     compileSdkVersion 28
 
@@ -16,12 +16,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-        compileOptions{
+        compileOptions {
 
         }
     }
 
-    lintOptions{
+    lintOptions {
         abortOnError false
     }
 

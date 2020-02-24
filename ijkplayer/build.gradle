@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
-//apply from: 'bintray.gradle'
-
+apply plugin: 'maven'
+apply from: 'maven_push.gradle'
 android {
     compileSdkVersion 28
 
@@ -16,12 +16,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-        compileOptions{
+        compileOptions {
 
         }
     }
 
-    lintOptions{
+    lintOptions {
         abortOnError false
     }
 
@@ -31,6 +31,6 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     api 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
-    api 'com.kk.taurus.playerbase:playerbase:3.3.5'
-//    api project(':playerbase')
+    api project(path: ':playerbase')
+//    api 'com.xiachufang:playbase:0.0.1'
 }

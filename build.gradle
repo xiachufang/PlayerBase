@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    
+
     repositories {
         google()
         jcenter()
@@ -20,6 +20,14 @@ allprojects {
     repositories {
         google()
         jcenter()
+        mavenCentral()
+        maven {
+            credentials {
+                username "team-android"
+                password "mWzc2b13V0lGgEsx"
+            }
+            url 'https://maven.xiachufang.com/repository/maven-releases/'
+        }
     }
 
     tasks.withType(Javadoc) {
