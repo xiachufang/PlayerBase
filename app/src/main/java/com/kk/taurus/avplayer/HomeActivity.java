@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.kk.taurus.avplayer.ui.ConcatPlayActivity;
 import com.kk.taurus.avplayer.ui.InputUrlPlayActivity;
 import com.kk.taurus.avplayer.ui.ViewPagerPlayActivity;
 import com.kk.taurus.avplayer.ui.listplay.MultiListActivity;
@@ -106,7 +107,9 @@ public class HomeActivity extends AppCompatActivity {
     public void shareAnimationVideos(View view){
         intentTo(ShareAnimationActivityA.class);
     }
-
+    public void concatPlay(View view) {
+        intentTo(ConcatPlayActivity.class);
+    }
     private void intentTo(Class<? extends Activity> cls){
         Intent intent = new Intent(getApplicationContext(), cls);
         startActivity(intent);

@@ -20,9 +20,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- *
  * Created by Taurus on 2018/5/27.
- *
  */
 public final class ProducerGroup implements IProducerGroup {
 
@@ -30,14 +28,14 @@ public final class ProducerGroup implements IProducerGroup {
 
     private List<BaseEventProducer> mEventProducers;
 
-    public ProducerGroup(ReceiverEventSender eventSender){
+    public ProducerGroup(ReceiverEventSender eventSender) {
         this.mEventSender = eventSender;
         mEventProducers = new CopyOnWriteArrayList<>();
     }
 
     @Override
     public void addEventProducer(BaseEventProducer eventProducer) {
-        if(!mEventProducers.contains(eventProducer)){
+        if (!mEventProducers.contains(eventProducer)) {
             eventProducer.attachSender(mEventSender);
             mEventProducers.add(eventProducer);
             eventProducer.onAdded();
@@ -47,7 +45,7 @@ public final class ProducerGroup implements IProducerGroup {
     @Override
     public boolean removeEventProducer(BaseEventProducer eventProducer) {
         boolean remove = mEventProducers.remove(eventProducer);
-        if(eventProducer!=null){
+        if (eventProducer != null) {
             eventProducer.onRemoved();
             eventProducer.attachSender(null);
         }
@@ -56,11 +54,14 @@ public final class ProducerGroup implements IProducerGroup {
 
     @Override
     public void destroy() {
-        for(BaseEventProducer eventProducer : mEventProducers){
-            eventProducer.onRemoved();
-            eventProducer.destroy();
-            eventProducer.attachSender(null);
+        if (mEventProducers != null) {
+            for (BaseEventProducer eventProducer : mEventProducers) {
+                eventProducer.onRemoved();
+                eventProducer.destroy();
+                eventProducer.attachSender(null);
+            }
+            mEventProducers.clear();
         }
-        mEventProducers.clear();
+
     }
 }

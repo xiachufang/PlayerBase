@@ -42,7 +42,7 @@ import com.kk.taurus.playerbase.record.RecordProxyPlayer;
  * Created by Taurus on 2018/3/17.
  */
 
-public final class AVPlayer implements IPlayer{
+public final class AVPlayer implements IPlayer {
 
     private final String TAG = "AVPlayer";
     //decoder instance , default is MediaPlayer
@@ -64,20 +64,21 @@ public final class AVPlayer implements IPlayer{
 
     private int mDecoderPlanId;
 
-    private float mVolumeLeft = -1,mVolumeRight = -1;
+    private float mVolumeLeft = -1, mVolumeRight = -1;
 
     private IPlayerProxy mRecordProxyPlayer;
 
-    public AVPlayer(){
+    public AVPlayer() {
         //default load config plan id.
         this(PlayerConfig.getDefaultPlanId());
     }
 
     /**
      * setting a decoder plan id for init instance.
+     *
      * @param decoderPlanId
      */
-    public AVPlayer(int decoderPlanId){
+    public AVPlayer(int decoderPlanId) {
         handleRecordProxy();
         //init timer counter proxy.
         mTimerCounterProxy = new TimerCounterProxy(1000);
@@ -86,7 +87,7 @@ public final class AVPlayer implements IPlayer{
     }
 
     private void handleRecordProxy() {
-        if(PlayerConfig.isPlayRecordOpen()){
+        if (PlayerConfig.isPlayRecordOpen()) {
             mRecordProxyPlayer = new RecordProxyPlayer(new PlayValueGetter() {
                 @Override
                 public int getCurrentPosition() {
@@ -102,6 +103,7 @@ public final class AVPlayer implements IPlayer{
                 public int getDuration() {
                     return AVPlayer.this.getDuration();
                 }
+
                 @Override
                 public int getState() {
                     return AVPlayer.this.getState();
@@ -120,17 +122,17 @@ public final class AVPlayer implements IPlayer{
         destroy();
         //loader decoder instance from config.
         mInternalPlayer = PlayerLoader.loadInternalPlayer(decoderPlanId);
-        if(mInternalPlayer==null)
+        if (mInternalPlayer == null)
             throw new RuntimeException(
                     "init decoder instance failure, please check your configuration" +
                             ", maybe your config classpath not found.");
         DecoderPlan plan = PlayerConfig.getPlan(mDecoderPlanId);
-        if(plan!=null){
-            PLog.d(TAG,"=============================");
-            PLog.d(TAG,"DecoderPlanInfo : planId      = " + plan.getIdNumber());
-            PLog.d(TAG,"DecoderPlanInfo : classPath   = " + plan.getClassPath());
-            PLog.d(TAG,"DecoderPlanInfo : desc        = " + plan.getDesc());
-            PLog.d(TAG,"=============================");
+        if (plan != null) {
+            PLog.d(TAG, "=============================");
+            PLog.d(TAG, "DecoderPlanInfo : planId      = " + plan.getIdNumber());
+            PLog.d(TAG, "DecoderPlanInfo : classPath   = " + plan.getClassPath());
+            PLog.d(TAG, "DecoderPlanInfo : desc        = " + plan.getDesc());
+            PLog.d(TAG, "=============================");
         }
     }
 
@@ -144,22 +146,21 @@ public final class AVPlayer implements IPlayer{
      *
      * @param decoderPlanId the planId is your configuration ids or default id.
      * @return Whether or not to switch to success.
-     *         if return false, maybe your incoming planId is the same as the current planId
-     *         or your incoming planId is illegal param.
-     *         return true is switch decoder success.
-     *
+     * if return false, maybe your incoming planId is the same as the current planId
+     * or your incoming planId is illegal param.
+     * return true is switch decoder success.
      */
-    public boolean switchDecoder(int decoderPlanId){
-        if(mDecoderPlanId == decoderPlanId){
+    public boolean switchDecoder(int decoderPlanId) {
+        if (mDecoderPlanId == decoderPlanId) {
             PLog.e(this.getClass().getSimpleName(),
                     "@@Your incoming planId is the same as the current use planId@@");
             return false;
         }
-        if(PlayerConfig.isLegalPlanId(decoderPlanId)){
+        if (PlayerConfig.isLegalPlanId(decoderPlanId)) {
             //and reload internal player instance.
             loadInternalPlayer(decoderPlanId);
             return true;
-        }else{
+        } else {
             throw new IllegalArgumentException("Illegal plan id = "
                     + decoderPlanId + ", please check your config!");
         }
@@ -167,7 +168,8 @@ public final class AVPlayer implements IPlayer{
 
     /**
      * see {@link IPlayer#option(int, Bundle)}
-     * @param code the code value custom yourself.
+     *
+     * @param code   the code value custom yourself.
      * @param bundle deliver some data if you need.
      */
     @Override
@@ -177,6 +179,7 @@ public final class AVPlayer implements IPlayer{
 
     /**
      * setting timer proxy state. default open.
+     *
      * @param useTimerProxy
      */
     public void setUseTimerProxy(boolean useTimerProxy) {
@@ -185,7 +188,7 @@ public final class AVPlayer implements IPlayer{
 
     private void initListener() {
         mTimerCounterProxy.setOnCounterUpdateListener(mOnCounterUpdateListener);
-        if(mInternalPlayer!=null){
+        if (mInternalPlayer != null) {
             mInternalPlayer.setOnPlayerEventListener(mInternalPlayerEventListener);
             mInternalPlayer.setOnErrorEventListener(mInternalErrorEventListener);
             mInternalPlayer.setOnBufferingListener(mInternalBufferingListener);
@@ -193,9 +196,9 @@ public final class AVPlayer implements IPlayer{
     }
 
     //destroy some listener
-    private void resetListener(){
+    private void resetListener() {
         mTimerCounterProxy.setOnCounterUpdateListener(null);
-        if(mInternalPlayer!=null){
+        if (mInternalPlayer != null) {
             mInternalPlayer.setOnPlayerEventListener(null);
             mInternalPlayer.setOnErrorEventListener(null);
             mInternalPlayer.setOnBufferingListener(null);
@@ -204,17 +207,17 @@ public final class AVPlayer implements IPlayer{
 
     private TimerCounterProxy.OnCounterUpdateListener mOnCounterUpdateListener =
             new TimerCounterProxy.OnCounterUpdateListener() {
-        @Override
-        public void onCounter() {
-            int curr = getCurrentPosition();
-            int duration = getDuration();
-            int bufferPercentage = getBufferPercentage();
-            //check valid data.
-            if(duration <= 0 && !isLive())
-                return;
-            onTimerUpdateEvent(curr, duration, bufferPercentage);
-        }
-    };
+                @Override
+                public void onCounter() {
+                    int curr = getCurrentPosition();
+                    int duration = getDuration();
+                    int bufferPercentage = getBufferPercentage();
+                    //check valid data.
+                    if (duration <= 0 && !isLive())
+                        return;
+                    onTimerUpdateEvent(curr, duration, bufferPercentage);
+                }
+            };
 
     private void onTimerUpdateEvent(int curr, int duration, int bufferPercentage) {
         Bundle bundle = BundlePool.obtain();
@@ -227,57 +230,57 @@ public final class AVPlayer implements IPlayer{
 
     private OnPlayerEventListener mInternalPlayerEventListener =
             new OnPlayerEventListener() {
-        @Override
-        public void onPlayerEvent(int eventCode, Bundle bundle) {
-            mTimerCounterProxy.proxyPlayEvent(eventCode, bundle);
-            if(eventCode==OnPlayerEventListener.PLAYER_EVENT_ON_PREPARED){
-                //when prepared set volume value
-                if(mVolumeLeft >= 0 || mVolumeRight >= 0){
-                    mInternalPlayer.setVolume(mVolumeLeft, mVolumeRight);
+                @Override
+                public void onPlayerEvent(int eventCode, Bundle bundle) {
+                    mTimerCounterProxy.proxyPlayEvent(eventCode, bundle);
+                    if (eventCode == OnPlayerEventListener.PLAYER_EVENT_ON_PREPARED) {
+                        //when prepared set volume value
+                        if (mVolumeLeft >= 0 || mVolumeRight >= 0) {
+                            mInternalPlayer.setVolume(mVolumeLeft, mVolumeRight);
+                        }
+                    } else if (eventCode == OnPlayerEventListener.PLAYER_EVENT_ON_PLAY_COMPLETE) {
+                        int duration = getDuration();
+                        int bufferPercentage = getBufferPercentage();
+                        //check valid data.
+                        if (duration <= 0 && !isLive())
+                            return;
+                        onTimerUpdateEvent(duration, duration, bufferPercentage);
+                    }
+                    if (isPlayRecordOpen())
+                        mRecordProxyPlayer.onPlayerEvent(eventCode, bundle);
+                    callBackPlayEventListener(eventCode, bundle);
                 }
-            }else if(eventCode==OnPlayerEventListener.PLAYER_EVENT_ON_PLAY_COMPLETE){
-                int duration = getDuration();
-                int bufferPercentage = getBufferPercentage();
-                //check valid data.
-                if(duration <= 0 && !isLive())
-                    return;
-                onTimerUpdateEvent(duration, duration, bufferPercentage);
-            }
-            if(isPlayRecordOpen())
-                mRecordProxyPlayer.onPlayerEvent(eventCode, bundle);
-            callBackPlayEventListener(eventCode, bundle);
-        }
-    };
+            };
 
     private OnErrorEventListener mInternalErrorEventListener =
             new OnErrorEventListener() {
-        @Override
-        public void onErrorEvent(int eventCode, Bundle bundle) {
-            mTimerCounterProxy.proxyErrorEvent(eventCode, bundle);
-            if(isPlayRecordOpen())
-                mRecordProxyPlayer.onErrorEvent(eventCode, bundle);
-            callBackErrorEventListener(eventCode, bundle);
-        }
-    };
+                @Override
+                public void onErrorEvent(int eventCode, Bundle bundle) {
+                    mTimerCounterProxy.proxyErrorEvent(eventCode, bundle);
+                    if (isPlayRecordOpen())
+                        mRecordProxyPlayer.onErrorEvent(eventCode, bundle);
+                    callBackErrorEventListener(eventCode, bundle);
+                }
+            };
 
     private OnBufferingListener mInternalBufferingListener =
             new OnBufferingListener() {
-        @Override
-        public void onBufferingUpdate(int bufferPercentage, Bundle extra) {
-            if(mOnBufferingListener!=null)
-                mOnBufferingListener.onBufferingUpdate(bufferPercentage, extra);
-        }
-    };
+                @Override
+                public void onBufferingUpdate(int bufferPercentage, Bundle extra) {
+                    if (mOnBufferingListener != null)
+                        mOnBufferingListener.onBufferingUpdate(bufferPercentage, extra);
+                }
+            };
 
     //must last callback event listener , because bundle will be recycle after callback.
     private void callBackPlayEventListener(int eventCode, Bundle bundle) {
-        if(mOnPlayerEventListener!=null)
+        if (mOnPlayerEventListener != null)
             mOnPlayerEventListener.onPlayerEvent(eventCode, bundle);
     }
 
     //must last callback event listener , because bundle will be recycle after callback.
-    private void callBackErrorEventListener(int eventCode, Bundle bundle){
-        if(mOnErrorEventListener!=null)
+    private void callBackErrorEventListener(int eventCode, Bundle bundle) {
+        if (mOnErrorEventListener != null)
             mOnErrorEventListener.onErrorEvent(eventCode, bundle);
     }
 
@@ -303,75 +306,76 @@ public final class AVPlayer implements IPlayer{
     /**
      * if you need , you can set a data provider.{@link IDataProvider}
      * you need call this method before {@link this#setDataSource(DataSource)}.
+     *
      * @param dataProvider
      */
-    public void setDataProvider(IDataProvider dataProvider){
-        if(mDataProvider!=null)
+    public void setDataProvider(IDataProvider dataProvider) {
+        if (mDataProvider != null)
             mDataProvider.destroy();
         this.mDataProvider = dataProvider;
-        if(mDataProvider!=null)
+        if (mDataProvider != null)
             this.mDataProvider.setOnProviderListener(mInternalProviderListener);
     }
 
     private IDataProvider.OnProviderListener mInternalProviderListener =
             new IDataProvider.OnProviderListener() {
-        @Override
-        public void onProviderDataStart() {
-            if(mOnProviderListener!=null)
-                mOnProviderListener.onProviderDataStart();
-            callBackPlayEventListener(
-                    OnPlayerEventListener.PLAYER_EVENT_ON_PROVIDER_DATA_START, null);
-        }
+                @Override
+                public void onProviderDataStart() {
+                    if (mOnProviderListener != null)
+                        mOnProviderListener.onProviderDataStart();
+                    callBackPlayEventListener(
+                            OnPlayerEventListener.PLAYER_EVENT_ON_PROVIDER_DATA_START, null);
+                }
 
-        @Override
-        public void onProviderDataSuccess(int code, Bundle bundle) {
-            if(mOnProviderListener!=null)
-                mOnProviderListener.onProviderDataSuccess(code, bundle);
-            switch (code){
-                //on data provider load data success,need set data to decoder player.
-                case IDataProvider.PROVIDER_CODE_SUCCESS_MEDIA_DATA:
-                    if(bundle!=null){
-                        Object obj = bundle.getSerializable(EventKey.SERIALIZABLE_DATA);
-                        if(obj==null || !(obj instanceof DataSource)){
-                            throw new RuntimeException("provider media success SERIALIZABLE_DATA must type of DataSource!");
-                        }
-                        DataSource data = (DataSource) obj;
-                        PLog.d(TAG,"onProviderDataSuccessMediaData : DataSource = " + data);
-                        interPlayerSetDataSource(data);
-                        internalPlayerStart(data.getStartPos());
-                        //success video data call back.
-                        callBackPlayEventListener(
-                                OnPlayerEventListener.PLAYER_EVENT_ON_PROVIDER_DATA_SUCCESS, bundle);
+                @Override
+                public void onProviderDataSuccess(int code, Bundle bundle) {
+                    if (mOnProviderListener != null)
+                        mOnProviderListener.onProviderDataSuccess(code, bundle);
+                    switch (code) {
+                        //on data provider load data success,need set data to decoder player.
+                        case IDataProvider.PROVIDER_CODE_SUCCESS_MEDIA_DATA:
+                            if (bundle != null) {
+                                Object obj = bundle.getSerializable(EventKey.SERIALIZABLE_DATA);
+                                if (obj == null || !(obj instanceof DataSource)) {
+                                    throw new RuntimeException("provider media success SERIALIZABLE_DATA must type of DataSource!");
+                                }
+                                DataSource data = (DataSource) obj;
+                                PLog.d(TAG, "onProviderDataSuccessMediaData : DataSource = " + data);
+                                interPlayerSetDataSource(data);
+                                internalPlayerStart(data.getStartPos());
+                                //success video data call back.
+                                callBackPlayEventListener(
+                                        OnPlayerEventListener.PLAYER_EVENT_ON_PROVIDER_DATA_SUCCESS, bundle);
+                            }
+                            break;
+                        default:
+                            //success other code ,for example ,maybe IDataProvider.PROVIDER_CODE_EXTRA_DATA
+                            //Usually, these state codes are customizable by the user.
+                            callBackPlayEventListener(code, bundle);
+                            break;
                     }
-                    break;
-                default:
-                    //success other code ,for example ,maybe IDataProvider.PROVIDER_CODE_EXTRA_DATA
-                    //Usually, these state codes are customizable by the user.
-                    callBackPlayEventListener(code, bundle);
-                    break;
-            }
-        }
+                }
 
-        @Override
-        public void onProviderError(int code, Bundle bundle) {
-            PLog.e(TAG,"onProviderError : code = " + code + ", bundle = " + bundle);
-            if(mOnProviderListener!=null)
-                mOnProviderListener.onProviderError(code, bundle);
-            //need recreate a new bundle, because a bundle will be recycle after call back.
-            Bundle errorBundle;
-            if(bundle!=null){
-                errorBundle = new Bundle(bundle);
-            }else{
-                errorBundle = new Bundle();
-            }
-            errorBundle.putInt(EventKey.INT_DATA,code);
-            //call back player event
-            callBackPlayEventListener(code, bundle);
-            //call back error event
-            callBackErrorEventListener(
-                    OnErrorEventListener.ERROR_EVENT_DATA_PROVIDER_ERROR,errorBundle);
-        }
-    };
+                @Override
+                public void onProviderError(int code, Bundle bundle) {
+                    PLog.e(TAG, "onProviderError : code = " + code + ", bundle = " + bundle);
+                    if (mOnProviderListener != null)
+                        mOnProviderListener.onProviderError(code, bundle);
+                    //need recreate a new bundle, because a bundle will be recycle after call back.
+                    Bundle errorBundle;
+                    if (bundle != null) {
+                        errorBundle = new Bundle(bundle);
+                    } else {
+                        errorBundle = new Bundle();
+                    }
+                    errorBundle.putInt(EventKey.INT_DATA, code);
+                    //call back player event
+                    callBackPlayEventListener(code, bundle);
+                    //call back error event
+                    callBackErrorEventListener(
+                            OnErrorEventListener.ERROR_EVENT_DATA_PROVIDER_ERROR, errorBundle);
+                }
+            };
 
     @Override
     public void setDataSource(DataSource dataSource) {
@@ -379,18 +383,18 @@ public final class AVPlayer implements IPlayer{
         //when data source update, attach listener.
         initListener();
         //if not set DataProvider,will be set data to decoder.
-        if(!useProvider())
+        if (!useProvider())
             interPlayerSetDataSource(dataSource);
 
     }
 
-    boolean isLive(){
-        return mDataSource!=null && mDataSource.isLive();
+    boolean isLive() {
+        return mDataSource != null && mDataSource.isLive();
     }
 
-    private void interPlayerSetDataSource(DataSource dataSource){
-        if(isPlayerAvailable()){
-            if(isPlayRecordOpen())
+    private void interPlayerSetDataSource(DataSource dataSource) {
+        if (isPlayerAvailable()) {
+            if (isPlayRecordOpen())
                 mRecordProxyPlayer.onDataSourceReady(dataSource);
             mInternalPlayer.setDataSource(dataSource);
         }
@@ -399,57 +403,58 @@ public final class AVPlayer implements IPlayer{
     @Override
     public void start() {
         int record = getRecord(mDataSource);
-        if(useProvider()){
+        if (useProvider()) {
             mDataSource.setStartPos(record);
             mDataProvider.handleSourceData(mDataSource);
-        }else{
+        } else {
             internalPlayerStart(record);
         }
     }
 
-    int getRecord(DataSource dataSource){
-        if(isPlayRecordOpen() && dataSource!=null)
+    int getRecord(DataSource dataSource) {
+        if (isPlayRecordOpen() && dataSource != null)
             return mRecordProxyPlayer.getRecord(dataSource);
-        return mDataSource!=null?mDataSource.getStartPos():0;
+        return mDataSource != null ? mDataSource.getStartPos() : 0;
     }
 
-    boolean isPlayRecordOpen(){
-        return PlayerConfig.isPlayRecordOpen() && mRecordProxyPlayer!=null;
+    boolean isPlayRecordOpen() {
+        return PlayerConfig.isPlayRecordOpen() && mRecordProxyPlayer != null;
     }
 
     /**
      * If you want to start play at a specified time,
      * please set this method.
+     *
      * @param msc
      */
     @Override
     public void start(int msc) {
-        if(useProvider()){
+        if (useProvider()) {
             mDataSource.setStartPos(msc);
             mDataProvider.handleSourceData(mDataSource);
-        }else{
+        } else {
             internalPlayerStart(msc);
         }
     }
 
-    private void internalPlayerStart(int msc){
-        if(isPlayerAvailable())
+    private void internalPlayerStart(int msc) {
+        if (isPlayerAvailable())
             mInternalPlayer.start(msc);
     }
 
-    private boolean isPlayerAvailable(){
-        return mInternalPlayer!=null;
+    private boolean isPlayerAvailable() {
+        return mInternalPlayer != null;
     }
 
-    private boolean useProvider(){
-        return mDataProvider!=null;
+    private boolean useProvider() {
+        return mDataProvider != null;
     }
 
-    public void rePlay(int msc){
-        if(!useProvider() && mDataSource!=null){
+    public void rePlay(int msc) {
+        if (!useProvider() && mDataSource != null) {
             interPlayerSetDataSource(mDataSource);
             internalPlayerStart(msc);
-        }else if(useProvider() && mDataSource!=null){
+        } else if (useProvider() && mDataSource != null) {
             mDataSource.setStartPos(msc);
             mDataProvider.handleSourceData(mDataSource);
         }
@@ -457,13 +462,13 @@ public final class AVPlayer implements IPlayer{
 
     @Override
     public void setDisplay(SurfaceHolder surfaceHolder) {
-        if(isPlayerAvailable())
+        if (isPlayerAvailable())
             mInternalPlayer.setDisplay(surfaceHolder);
     }
 
     @Override
     public void setSurface(Surface surface) {
-        if(isPlayerAvailable())
+        if (isPlayerAvailable())
             mInternalPlayer.setSurface(surface);
     }
 
@@ -471,119 +476,119 @@ public final class AVPlayer implements IPlayer{
     public void setVolume(float left, float right) {
         mVolumeLeft = left;
         mVolumeRight = right;
-        if(isPlayerAvailable())
+        if (isPlayerAvailable())
             mInternalPlayer.setVolume(left, right);
     }
 
     @Override
     public void setSpeed(float speed) {
-        if(isPlayerAvailable())
+        if (isPlayerAvailable())
             mInternalPlayer.setSpeed(speed);
     }
 
     @Override
     public boolean isPlaying() {
-        if(isPlayerAvailable())
+        if (isPlayerAvailable())
             return mInternalPlayer.isPlaying();
         return false;
     }
 
     @Override
     public int getCurrentPosition() {
-        if(isPlayerAvailable())
+        if (isPlayerAvailable())
             return mInternalPlayer.getCurrentPosition();
         return 0;
     }
 
     @Override
     public int getDuration() {
-        if(isPlayerAvailable())
+        if (isPlayerAvailable())
             return mInternalPlayer.getDuration();
         return 0;
     }
 
     @Override
     public int getAudioSessionId() {
-        if(isPlayerAvailable())
+        if (isPlayerAvailable())
             return mInternalPlayer.getAudioSessionId();
         return 0;
     }
 
     @Override
     public int getVideoWidth() {
-        if(isPlayerAvailable())
+        if (isPlayerAvailable())
             return mInternalPlayer.getVideoWidth();
         return 0;
     }
 
     @Override
     public int getVideoHeight() {
-        if(isPlayerAvailable())
+        if (isPlayerAvailable())
             return mInternalPlayer.getVideoHeight();
         return 0;
     }
 
     @Override
     public int getState() {
-        if(isPlayerAvailable())
+        if (isPlayerAvailable())
             return mInternalPlayer.getState();
         return 0;
     }
 
     @Override
     public int getBufferPercentage() {
-        if(isPlayerAvailable())
+        if (isPlayerAvailable())
             return mInternalPlayer.getBufferPercentage();
         return 0;
     }
 
     @Override
     public void pause() {
-        if(isPlayerAvailable())
+        if (isPlayerAvailable())
             mInternalPlayer.pause();
     }
 
     @Override
     public void resume() {
-        if(isPlayerAvailable())
+        if (isPlayerAvailable())
             mInternalPlayer.resume();
     }
 
     @Override
     public void seekTo(int msc) {
-        if(isPlayerAvailable())
+        if (isPlayerAvailable())
             mInternalPlayer.seekTo(msc);
     }
 
     @Override
     public void stop() {
-        if(isPlayRecordOpen())
+        if (isPlayRecordOpen())
             mRecordProxyPlayer.onIntentStop();
-        if(useProvider())
+        if (useProvider())
             mDataProvider.cancel();
-        if(isPlayerAvailable())
+        if (isPlayerAvailable())
             mInternalPlayer.stop();
     }
 
     @Override
     public void reset() {
-        if(isPlayRecordOpen())
+        if (isPlayRecordOpen())
             mRecordProxyPlayer.onIntentReset();
-        if(useProvider())
+        if (useProvider())
             mDataProvider.cancel();
-        if(isPlayerAvailable())
+        if (isPlayerAvailable())
             mInternalPlayer.reset();
     }
 
     @Override
     public void destroy() {
-        if(isPlayRecordOpen())
+        if (isPlayRecordOpen())
             mRecordProxyPlayer.onIntentDestroy();
-        if(useProvider())
+        if (useProvider())
             mDataProvider.destroy();
-        if(isPlayerAvailable())
+        if (isPlayerAvailable())
             mInternalPlayer.destroy();
-        if(mTimerCounterProxy!=null)
+        if (mTimerCounterProxy != null)
             mTimerCounterProxy.cancel();
         resetListener();
     }

@@ -24,7 +24,6 @@ android {
     lintOptions {
         abortOnError false
     }
-
 }
 
 dependencies {
@@ -32,5 +31,5 @@ dependencies {
 
     api 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
     api project(path: ':playerbase')
-//    api 'com.xiachufang:playbase:0.0.1'
+//    api 'com.xiachufang:playbase:0.0.2'
 }
