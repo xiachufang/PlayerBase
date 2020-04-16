@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/id_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -65,6 +65,18 @@
                 android:onClick="useFloatWindow"
                 android:textAllCaps="false"
                 android:text="FloatWindow的无缝切播"
+                android:textSize="16sp"
+                android:textColor="@color/buttonTextColor"/>
+
+            <Button
+                android:id="@+id/tv_multi_play"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:onClick="multiVideoPlay"
+                android:textAllCaps="false"
+                android:text="多实例播放"
                 android:textSize="16sp"
                 android:textColor="@color/buttonTextColor"/>
 

@@ -3,9 +3,9 @@ package com.kk.taurus.avplayer.ui;
 import android.Manifest;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -38,6 +38,7 @@ import kr.co.namee.permissiongen.PermissionSuccess;
 public class ViewPagerPlayActivity extends AppCompatActivity {
 
     private ViewPager mViewPager;
+    private ViewPager.OnPageChangeListener mOnPageChangeListener;
     private TextView mTvTitle;
 
     private RelationAssist mRelationAssist;
@@ -77,7 +78,7 @@ public class ViewPagerPlayActivity extends AppCompatActivity {
         });
         mRelationAssist.getSuperContainer().setBackgroundColor(Color.BLACK);
 
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        mViewPager.addOnPageChangeListener(mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -150,7 +151,8 @@ public class ViewPagerPlayActivity extends AppCompatActivity {
                 mViewPager.post(new Runnable() {
                     @Override
                     public void run() {
-                        playPosition(0);
+                        if(mOnPageChangeListener!=null)
+                            mOnPageChangeListener.onPageSelected(0);
                     }
                 });
             }

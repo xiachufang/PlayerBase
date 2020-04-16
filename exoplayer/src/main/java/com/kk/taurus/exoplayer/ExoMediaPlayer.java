@@ -26,7 +26,6 @@ import android.view.SurfaceHolder;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
@@ -46,6 +45,7 @@ import com.google.android.exoplayer2.upstream.AssetDataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.RawResourceDataSource;
 import com.google.android.exoplayer2.util.Util;
@@ -98,11 +98,12 @@ public class ExoMediaPlayer extends BaseInternalPlayer {
         mAppContext = AppContextAttach.getApplicationContext();
         RenderersFactory renderersFactory = new DefaultRenderersFactory(mAppContext);
         DefaultTrackSelector trackSelector =
-                new DefaultTrackSelector();
-        mInternalPlayer = ExoPlayerFactory.newSimpleInstance(mAppContext, renderersFactory, trackSelector);
+                new DefaultTrackSelector(mAppContext);
+        mInternalPlayer = new SimpleExoPlayer.Builder(mAppContext, renderersFactory)
+                .setTrackSelector(trackSelector).build();
 
         // Measures bandwidth during playback. Can be null if not required.
-        mBandwidthMeter = new DefaultBandwidthMeter();
+        mBandwidthMeter = new DefaultBandwidthMeter.Builder(mAppContext).build();
 
         mInternalPlayer.addListener(mEventListener);
 
@@ -150,18 +151,24 @@ public class ExoMediaPlayer extends BaseInternalPlayer {
             return;
         }
 
-        //create DefaultDataSourceFactory
-        com.google.android.exoplayer2.upstream.DataSource.Factory dataSourceFactory =
-                new DefaultDataSourceFactory(mAppContext,
-                        Util.getUserAgent(mAppContext, mAppContext.getPackageName()), mBandwidthMeter);
-
         //if scheme is http or https and DataSource contain extra data, use DefaultHttpDataSourceFactory.
         String scheme = videoUri.getScheme();
         HashMap<String, String> extra = dataSource.getExtra();
+        //setting user-agent from extra data
+        String settingUserAgent = extra!=null?extra.get("User-Agent"):"";
+        //if not setting, use default user-agent
+        String userAgent = !TextUtils.isEmpty(settingUserAgent)?settingUserAgent:Util.getUserAgent(mAppContext, mAppContext.getPackageName());
+        //create DefaultDataSourceFactory
+        com.google.android.exoplayer2.upstream.DataSource.Factory dataSourceFactory =
+                new DefaultDataSourceFactory(mAppContext,
+                        userAgent, mBandwidthMeter);
         if(extra!=null && extra.size()>0 &&
                 ("http".equalsIgnoreCase(scheme)||"https".equalsIgnoreCase(scheme))){
             dataSourceFactory = new DefaultHttpDataSourceFactory(
-                    Util.getUserAgent(mAppContext, mAppContext.getPackageName()));
+                    userAgent,
+                    DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
+                    DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
+                    true);
             ((DefaultHttpDataSourceFactory)dataSourceFactory).getDefaultRequestProperties().set(extra);
         }
 
@@ -176,7 +183,7 @@ public class ExoMediaPlayer extends BaseInternalPlayer {
         if(timedTextSource!=null){
             Format format = Format.createTextSampleFormat(null, timedTextSource.getMimeType(), timedTextSource.getFlag(), null);
             MediaSource timedTextMediaSource = new SingleSampleMediaSource.Factory(new DefaultDataSourceFactory(mAppContext,
-                    Util.getUserAgent(mAppContext, mAppContext.getPackageName())))
+                    userAgent))
                     .createMediaSource(Uri.parse(timedTextSource.getPath()), format, C.TIME_UNSET);
             //merge MediaSource and timedTextMediaSource.
             mediaSource = new MergingMediaSource(mediaSource, timedTextMediaSource);

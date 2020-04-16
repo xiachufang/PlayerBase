@@ -18,7 +18,7 @@ package com.kk.taurus.playerbase.widget;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -299,6 +299,12 @@ public class SuperContainer extends FrameLayout implements OnTouchGestureListene
     public void onSingleTapUp(MotionEvent event) {
         if(mEventDispatcher!=null)
             mEventDispatcher.dispatchTouchEventOnSingleTabUp(event);
+    }
+
+    @Override
+    public void onLongPress(MotionEvent event) {
+        if(mEventDispatcher!=null)
+            mEventDispatcher.dispatchTouchEventOnLongPress(event);
     }
 
     @Override

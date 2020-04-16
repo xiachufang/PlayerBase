@@ -3,15 +3,16 @@ package com.kk.taurus.avplayer;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import com.kk.taurus.avplayer.ui.InputUrlPlayActivity;
+import com.kk.taurus.avplayer.ui.MultiPlayActivity;
 import com.kk.taurus.avplayer.ui.ViewPagerPlayActivity;
 import com.kk.taurus.avplayer.ui.listplay.MultiListActivity;
 import com.kk.taurus.avplayer.ui.ShareAnimationActivityA;
@@ -89,6 +90,10 @@ public class HomeActivity extends AppCompatActivity {
 
     public void useFloatWindow(View view){
         intentTo(FloatWindowActivity.class);
+    }
+
+    public void multiVideoPlay(View view){
+        intentTo(MultiPlayActivity.class);
     }
 
     public void viewPagerPlay(View view){
