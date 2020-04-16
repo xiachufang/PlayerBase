@@ -30,6 +30,6 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     api 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
-    api project(path: ':playerbase')
-//    api 'com.xiachufang:playbase:0.0.2'
+//    api project(path: ':playerbase')
+    api 'com.xiachufang:playbase:0.0.2'
 }

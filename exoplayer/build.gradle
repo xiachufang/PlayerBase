@@ -35,5 +35,6 @@ dependencies {
     api 'com.google.android.exoplayer:exoplayer-hls:2.9.1'
     api 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.9.1'
 //    api 'com.kk.taurus.playerbase:playerbase:3.3.5'
-    api project(':playerbase')
+    api 'com.xiachufang:playbase:0.0.2'
+//    api project(':playerbase')
 }

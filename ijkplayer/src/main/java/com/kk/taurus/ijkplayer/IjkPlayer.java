@@ -59,7 +59,11 @@ public class IjkPlayer extends BaseInternalPlayer {
     }
 
     static {
-        IjkMediaPlayer.loadLibrariesOnce(null);
+        try {
+            IjkMediaPlayer.loadLibrariesOnce(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         try {
             IjkMediaPlayer.native_profileBegin("libijkplayer.so");
         } catch (Exception e) {
